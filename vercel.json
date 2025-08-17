@@ -1,0 +1,6 @@
+{
+  "middleware": {
+    "path": "/:store",
+    "function": "api/middleware.js"
+  }
+}
