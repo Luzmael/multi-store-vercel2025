@@ -1,6 +1,9 @@
 {
-  "middleware": {
-    "path": "/:store",
-    "function": "api/middleware.js"
-  }
+  "rewrites": [
+    {
+      "source": "/:store",
+      "destination": "/stores/:store/index.html"
+    }
+  ]
 }
+
