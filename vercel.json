@@ -1,9 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/:store",
-      "destination": "/stores/:store/index.html"
+      "source": "/stores/tienda-laprueba",
+      "destination": "/stores/tienda-laprueba/index.html"
+    },
+    {
+      "source": "/stores/tienda-lapaz",
+      "destination": "/stores/tienda-lapaz/index.html"
     }
   ]
 }
-
