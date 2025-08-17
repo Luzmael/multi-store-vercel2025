@@ -25,6 +25,10 @@ export default async function handler(req, res) {
     const filePath = path.join(process.cwd(), 'public', 'stores', 'tienda-nueva', 'products.json');
 
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
+
+    // Opcional: eliminar archivo anterior
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+
     fs.writeFileSync(filePath, JSON.stringify(output, null, 2));
 
     res.setHeader('Cache-Control', 'public, max-age=2592000, immutable'); // 30 días
@@ -33,3 +37,4 @@ export default async function handler(req, res) {
     res.status(500).json({ error: 'Unexpected error', details: err.message });
   }
 }
+
