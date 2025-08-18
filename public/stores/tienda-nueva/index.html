@@ -1117,9 +1117,37 @@
         let whatsappNumber = '584149834667'; // Valor por defecto
         let htmlName = 'Tienda Principal'; // Valor por defecto
 
+        // Clave para el almacenamiento local con fecha de expiración
+        const STORAGE_KEY = 'digital_catalog_pro_data';
+        const STORAGE_EXPIRY_DAYS = 1; // 1 día de expiración
+
         // Obtener configuración del HTML
         const whatsappUUID = document.querySelector('meta[name="whatsapp-uuid"]')?.content;
         htmlName = document.querySelector('meta[name="html-name"]')?.content || htmlName;
+
+        // Función para verificar si los datos en caché son válidos
+        function isCacheValid(cachedData) {
+            if (!cachedData || !cachedData.timestamp) return false;
+            
+            const expiryDate = new Date(cachedData.timestamp);
+            expiryDate.setDate(expiryDate.getDate() + STORAGE_EXPIRY_DAYS);
+            
+            return new Date() < expiryDate;
+        }
+
+        // Función para precargar imágenes en caché
+        async function preloadImages(imageUrls) {
+            const promises = imageUrls.map(url => {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.src = url;
+                    img.onload = resolve;
+                    img.onerror = resolve; // No rechazamos para que continúe con las demás
+                });
+            });
+            
+            await Promise.all(promises);
+        }
 
         // Función para obtener configuración de WhatsApp
         async function loadWhatsAppNumber() {
@@ -1179,9 +1207,21 @@
                 : url;
         }
         
-        // Función para cargar productos
+        // Función para cargar productos desde Supabase o caché
         async function loadProducts() {
             try {
+                // Verificar si hay datos válidos en caché
+                const cachedData = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                
+                if (isCacheValid(cachedData)) {
+                    console.log("Usando datos de caché");
+                    return {
+                        products: cachedData.products,
+                        categories: cachedData.categories
+                    };
+                }
+                
+                console.log("Obteniendo datos de Supabase");
                 await getAppSettings();
                 
                 const { data, error } = await supabaseClient
@@ -1191,14 +1231,14 @@
                 if (error) throw error;
                 
                 if (data && data.length > 0) {
-                    return {
+                    const processedData = {
                         products: data.map(product => ({
                             id: product.id,
                             name: product.name || 'Unnamed Product',
                             description: product.description || '',
                             price: `Bs ${(parseFloat(product.price?.replace(/[^0-9.]/g, '') || 0) * currentExchangeRate).toFixed(2)}`,
                             originalPrice: product.price || '$0.00',
-                            priceValue: parseFloat(product.price?.replace(/[^0-9.]/g, '') || 0),
+                            priceValue: parseFloat(product.price?.replace(/[^0-9.]/g, '') || 0,
                             image: product.image || 'https://via.placeholder.com/500',
                             images: product.images || [],
                             video: product.video || '',
@@ -1209,12 +1249,42 @@
                         })),
                         categories: [...new Set(data.map(p => p.category))]
                     };
+                    
+                    // Guardar en caché con marca de tiempo
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                        ...processedData,
+                        timestamp: new Date().toISOString()
+                    }));
+                    
+                    // Precargar imágenes en caché del navegador
+                    const allImageUrls = data.flatMap(product => {
+                        const urls = [];
+                        if (product.image) urls.push(product.image);
+                        if (product.images) urls.push(...product.images.filter(img => img.trim()));
+                        return urls;
+                    });
+                    
+                    // Precargar imágenes en segundo plano
+                    setTimeout(() => preloadImages(allImageUrls), 1000);
+                    
+                    return processedData;
                 }
                 
                 return { products: [], categories: [] };
                 
             } catch (error) {
                 console.error("Error loading products:", error);
+                
+                // Intentar usar caché incluso si está expirada como fallback
+                const cachedData = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                if (cachedData) {
+                    console.log("Usando caché expirada como fallback");
+                    return {
+                        products: cachedData.products,
+                        categories: cachedData.categories
+                    };
+                }
+                
                 return { products: [], categories: [] };
             }
         }
