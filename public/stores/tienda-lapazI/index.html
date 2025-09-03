@@ -1069,6 +1069,13 @@
             </div>
         </div>
     </div>
+
+<div id="installBanner" style="display: none; text-align: center; padding: 10px; background: #f0f0f0;">
+  <p>¿Quieres agregar esta tienda a tu pantalla principal?</p>
+  <button id="btnInstall">Agregar</button>
+  <button id="btnDismiss">No ahora</button>
+</div>
+
     
     <!-- Modal para datos del cliente -->
     <div class="customer-modal" id="customerModal">
@@ -1106,6 +1113,9 @@
     </div>
 
     <script>
+
+        
+        
         // 1. Configuración de Supabase
         const supabaseUrl = 'https://bekzfacymgaytpgfqrzg.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJla3pmYWN5bWdheXRwZ2ZxcnpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQxMjAzNjcsImV4cCI6MjA2OTY5NjM2N30.R1hbWLGSvp6LcqqsDd-ibTGMS_mrGNl0oP-Ah-0iSt8';
@@ -1151,6 +1161,38 @@
             }
         }
 
+let deferredPrompt;  //Para agregar a pantalla principal
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault(); // Evita el banner automático
+  deferredPrompt = e;
+
+  document.getElementById("installBanner").style.display = "block";
+});
+
+        document.getElementById("btnInstall").addEventListener("click", () => {
+  if (!deferredPrompt) return;
+
+  deferredPrompt.prompt();
+
+  deferredPrompt.userChoice.then((choiceResult) => {
+    if (choiceResult.outcome === "accepted") {
+      console.log("Usuario aceptó instalar la app");
+    } else {
+      console.log("Usuario rechazó la instalación");
+    }
+
+    deferredPrompt = null;
+    document.getElementById("installBanner").style.display = "none";
+  });
+});
+
+        document.getElementById("btnDismiss").addEventListener("click", () => {
+  document.getElementById("installBanner").style.display = "none";
+});
+
+
+        
         // Función para obtener configuración de la app
         async function getAppSettings() {
             try {
