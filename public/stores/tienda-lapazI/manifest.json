@@ -1,7 +1,7 @@
 {
-  "name": "Catálogo Tienda LaPrueba",
-  "short_name": "LaPrueba",
-  "start_url": "/stores/tienda-laprueba/",
+  "name": "Tienda La Paz",
+  "short_name": "LaPaz",
+  "start_url": "/stores/tienda-lapazI",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007bff",
@@ -18,3 +18,4 @@
     }
   ]
 }
+
