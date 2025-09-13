@@ -1015,6 +1015,66 @@
                 width: 100%;
             }
         }
+
+     #installBanner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+}
+
+.install-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.install-content h3 {
+  margin-bottom: 15px;
+  font-size: 20px;
+  color: #333;
+}
+
+.install-content button {
+  margin: 10px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+#btnInstall {
+  background-color: #4CAF50;
+  color: white;
+}
+
+#btnInstall:hover {
+  background-color: #45a049;
+}
+
+#btnDismiss {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+#btnDismiss:hover {
+  background-color: #ddd;
+}
+
+        
     </style>
 </head>
 <body>
@@ -1070,11 +1130,14 @@
         </div>
     </div>
 
-<div id="installBanner" style="display: none; text-align: center; padding: 10px; background: #f0f0f0;">
-  <p>¿Quieres agregar esta tienda a tu pantalla principal?</p>
-  <button id="btnInstall">Agregar</button>
-  <button id="btnDismiss">No ahora</button>
+<div id="installBanner" style="display: none;">
+  <div class="install-content">
+    <h3>¿Quieres agregar esta tienda a tu pantalla principal?</h3>
+    <button id="btnInstall">Agregar</button>
+    <button id="btnDismiss">Ahora no</button>
+  </div>
 </div>
+
 
     
     <!-- Modal para datos del cliente -->
