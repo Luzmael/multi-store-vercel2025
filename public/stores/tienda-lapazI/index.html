@@ -1347,6 +1347,14 @@ iframe.gallery-media {
 </div>
 
 
+    <div id="installBanner" style="display: none;">
+  <div class="install-content">
+    <h3>¿Quieres agregar esta tienda a tu pantalla principal?</h3>
+    <p>Presiona el ícono de compartir <span style="font-size: 20px;">🔗</span> y selecciona “Agregar a pantalla de inicio”.</p>
+    <button onclick="document.getElementById('installBanner').style.display='none'">Cerrar</button>
+  </div>
+</div>
+
     
     <!-- Modal para datos del cliente -->
     <div class="customer-modal" id="customerModal">
@@ -2329,7 +2337,20 @@ window.addEventListener("beforeinstallprompt", (e) => {
         .then(reg => console.log('Service Worker registrado:', reg.scope))
         .catch(err => console.error('Error al registrar el Service Worker:', err));
     });
+  }  
+
+function isSafariOniOS() {
+  const ua = navigator.userAgent;
+  return /iPhone|iPad|iPod/.test(ua) && /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (isSafariOniOS()) {
+    document.getElementById('installBanner').style.display = 'block';
   }
+});
+
+        
     </script>
 </body>
 </html>
