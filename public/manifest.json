@@ -9,12 +9,12 @@
     {
       "src": "/Copilot_20250915_020115 (1).webp",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/webp"
     },
     {
       "src": "/Copilot_20250915_020115.webp",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/webp"
     }
   ]
 }
