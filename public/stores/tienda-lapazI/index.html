@@ -2339,19 +2339,6 @@ window.addEventListener("beforeinstallprompt", (e) => {
     });
   }  
 
-function isSafariOniOS() {
-  const ua = navigator.userAgent;
-  return /iPhone|iPad|iPod/.test(ua) && /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  if (isSafariOniOS()) {
-    document.getElementById('installBanner').style.display = 'block';
-
-
-      
-  }
-});
 
         
     </script>
