@@ -2347,6 +2347,15 @@ function isSafariOniOS() {
 document.addEventListener('DOMContentLoaded', () => {
   if (isSafariOniOS()) {
     document.getElementById('installBanner').style.display = 'block';
+function isSafariOniOS() {
+  const ua = navigator.userAgent;
+  return /iPhone|iPad|iPod/.test(ua) && /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
+}
+
+if (isSafariOniOS()) {
+  document.getElementById("installBanner").style.display = "flex";
+
+      
   }
 });
 
