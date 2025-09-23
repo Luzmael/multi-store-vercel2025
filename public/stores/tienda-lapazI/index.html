@@ -1291,18 +1291,18 @@ iframe.gallery-media {
     <div class="search-filter-container">
         <div class="search-box">
             <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Search products..." oninput="filterProducts()">
+            <input type="text" id="searchInput" placeholder="Buscar productos..." oninput="filterProducts()">
         </div>
         <div class="category-filter">
             <select id="categoryFilter" onchange="filterProducts()">
-                <option value="">All categories</option>
+                <option value="">Todas las categorías</option>
             </select>
         </div>
     </div>
     
     <div class="catalog" id="catalog">
         <!-- Products will load here -->
-        <div class="loading-message">Loading products...</div>
+        <div class="loading-message">Cargando productos...</div>
     </div>
     
     <div class="fullscreen-modal" id="fullscreenModal">
@@ -1318,11 +1318,11 @@ iframe.gallery-media {
     <div class="cart-overlay" id="cartOverlay">
         <div class="cart-container">
             <div class="cart-header">
-                <h2 class="cart-title">Your Cart</h2>
+                <h2 class="cart-title">Tu carrito</h2>
                 <button class="close-cart" id="closeCart"><i class="fas fa-times"></i></button>
             </div>
             <div class="cart-items" id="cartItems">
-                <p class="empty-cart-message">Your cart is empty</p>
+                <p class="empty-cart-message">Tu carrito está vacío</p>
             </div>
             <div class="cart-total">
                 Subtotal: <span id="cartSubtotal">Bs 0</span><br>
@@ -1332,8 +1332,8 @@ iframe.gallery-media {
                 <strong>Total: <span id="cartTotal">Bs 0</span></strong>
             </div>
             <div class="cart-actions">
-                <button class="clear-cart" id="clearCart"><i class="fas fa-trash"></i> Clear Cart</button>
-                <button class="send-whatsapp" id="sendWhatsApp"><i class="fab fa-whatsapp"></i> Send via WhatsApp</button>
+                <button class="clear-cart" id="clearCart"><i class="fas fa-trash"></i> Vaciar carrito</button>
+                <button class="send-whatsapp" id="sendWhatsApp"><i class="fab fa-whatsapp"></i> Enviar por WhatsApp</button>
             </div>
         </div>
     </div>
@@ -1350,7 +1350,7 @@ iframe.gallery-media {
     <div id="installBanner" style="display: none;">
   <div class="install-content">
     <h3>¿Quieres agregar esta tienda a tu pantalla principal?</h3>
-    <p>Presiona el ícono de compartir <span style="font-size: 20px;">🔗</span> y selecciona “Agregar a pantalla de inicio”.</p>
+    <p>Presiona el ícono de compartir <span style="font-size: 20px;">🔗</span> y selecciona "Agregar a pantalla de inicio".</p>
     <button onclick="document.getElementById('installBanner').style.display='none'">Cerrar</button>
   </div>
 </div>
@@ -1549,7 +1549,7 @@ window.addEventListener("beforeinstallprompt", (e) => {
             catalogEl.innerHTML = '';
             
             if (!productsToShow || productsToShow.length === 0) {
-                catalogEl.innerHTML = '<div class="no-results">No products found matching your search</div>';
+                catalogEl.innerHTML = '<div class="no-results">No se encontraron productos que coincidan con tu búsqueda</div>';
                 return;
             }
             
@@ -1634,7 +1634,7 @@ window.addEventListener("beforeinstallprompt", (e) => {
                 // Size options
                 const sizesHTML = product.sizes && product.sizes.length > 0
                     ? `
-                        <div class="variant-title">Size:</div>
+                        <div class="variant-title">Talla:</div>
                         <div class="variant-options size-options">
                             ${product.sizes.map((size, i) => `
                                 <div class="size-option ${i === 0 ? 'selected' : ''}" 
@@ -1693,11 +1693,11 @@ window.addEventListener("beforeinstallprompt", (e) => {
                                     '${product.image.replace(/'/g, "\\'")}',
                                     this.closest('.product-card')
                                 )">
-                            <i class="fas fa-cart-plus"></i> Add to Cart
+                            <i class="fas fa-cart-plus"></i> Agregar al carrito
                         </button>
                         
                         <button class="view-more-btn" onclick="toggleProductDetails(this)">
-                            <i class="fas fa-chevron-down"></i> View more
+                            <i class="fas fa-chevron-down"></i> Ver más
                         </button>
                     </div>
                 `;
@@ -1725,12 +1725,12 @@ window.addEventListener("beforeinstallprompt", (e) => {
                 description.style.display = 'block';
                 if (variants) variants.style.display = 'block';
                 addToCartBtn.style.display = 'flex';
-                button.innerHTML = '<i class="fas fa-chevron-up"></i> View less';
+                button.innerHTML = '<i class="fas fa-chevron-up"></i> Ver menos';
             } else {
                 description.style.display = 'none';
                 if (variants) variants.style.display = 'none';
                 addToCartBtn.style.display = 'none';
-                button.innerHTML = '<i class="fas fa-chevron-down"></i> View more';
+                button.innerHTML = '<i class="fas fa-chevron-down"></i> Ver más';
             }
         }
 
@@ -1902,10 +1902,10 @@ window.addEventListener("beforeinstallprompt", (e) => {
             
             // Feedback animation
             const button = productCard.querySelector('.add-to-cart');
-            button.innerHTML = '<i class="fas fa-check"></i> Added!';
+            button.innerHTML = '<i class="fas fa-check"></i> ¡Agregado!';
             button.style.backgroundColor = '#2e7d32';
             setTimeout(() => {
-                button.innerHTML = '<i class="fas fa-cart-plus"></i> Add to Cart';
+                button.innerHTML = '<i class="fas fa-cart-plus"></i> Agregar al carrito';
                 button.style.backgroundColor = '#4CAF50';
             }, 1000);
         }
@@ -1930,7 +1930,7 @@ window.addEventListener("beforeinstallprompt", (e) => {
                 if (!emptyMessage) {
                     const msg = document.createElement('p');
                     msg.className = 'empty-cart-message';
-                    msg.textContent = 'Your cart is empty';
+                    msg.textContent = 'Tu carrito está vacío';
                     cartItemsEl.appendChild(msg);
                 }
             } else if (emptyMessage) {
@@ -1952,7 +1952,7 @@ window.addEventListener("beforeinstallprompt", (e) => {
                 itemEl.className = 'cart-item';
                 
                 const variantsInfo = [];
-                if (item.size) variantsInfo.push(`Size: ${item.size}`);
+                if (item.size) variantsInfo.push(`Talla: ${item.size}`);
                 if (item.color) variantsInfo.push(`Color: ${item.color}`);
                 
                 itemEl.innerHTML = `
@@ -2044,7 +2044,7 @@ window.addEventListener("beforeinstallprompt", (e) => {
         // Clear cart
         function clearCart() {
             if (cart.length === 0) return;
-            if (confirm('Are you sure you want to clear your cart?')) {
+            if (confirm('¿Estás seguro de que deseas vaciar tu carrito?')) {
                 cart = [];
                 updateCart();
             }
@@ -2154,7 +2154,7 @@ window.addEventListener("beforeinstallprompt", (e) => {
         // Función modificada para enviar por WhatsApp (ahora muestra el modal primero)
         function sendWhatsApp() {
             if (cart.length === 0) {
-                alert('Su carrito está vacío');
+                alert('Tu carrito está vacío');
                 return;
             }
             
