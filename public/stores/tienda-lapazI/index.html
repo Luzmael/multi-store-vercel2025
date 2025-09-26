@@ -2344,46 +2344,6 @@ if ('serviceWorker' in navigator) {
         .catch(err => console.error('Error al registrar el Service Worker:', err));
     });
   }
-
-  // Verificación de productos cargados
-  function verificarProductos(productos) {
-    if (!Array.isArray(productos) || productos.length === 0) {
-      alert("Estamos restaurando el catálogo. Si no ves los productos en unos segundos, recarga la página.");
-      return false;
-    }
-    return true;
-  }
-
-  // Mostrar productos con validación de estructura
-  function mostrarProductos(productos) {
-    const catalogo = document.getElementById('catalog');
-    catalogo.innerHTML = '';
-
-    productos.forEach(producto => {
-      const sizes = Array.isArray(producto.sizes) ? producto.sizes : [];
-
-      const item = document.createElement('div');
-      item.className = 'producto';
-      item.innerHTML = `
-        <h3>${producto.nombre}</h3>
-        <p>Tallas disponibles: ${sizes.length > 0 ? sizes.join(', ') : 'Ninguna'}</p>
-      `;
-      catalogo.appendChild(item);
-    });
-  }
-
-  // Cargar productos desde la API
-  fetch('/api/productos')
-    .then(res => res.json())
-    .then(data => {
-      if (verificarProductos(data)) {
-        mostrarProductos(data);
-      }
-    })
-    .catch(err => {
-      console.error('Error al cargar productos:', err);
-      verificarProductos([]);
-    });
        
 
         
