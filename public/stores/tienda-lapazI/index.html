@@ -2331,13 +2331,39 @@ window.addEventListener("beforeinstallprompt", (e) => {
         window.filterProducts = filterProducts;
 
 
-         if ('serviceWorker' in navigator) {
+        if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('Service Worker registrado:', reg.scope))
+        .then(reg => {
+          console.log('Service Worker registrado:', reg.scope);
+
+          // Verifica si el catálogo está vacío y fuerza actualización si es necesario
+          if (reg.active) {
+            reg.active.postMessage('verificar-catalogo');
+          }
+        })
         .catch(err => console.error('Error al registrar el Service Worker:', err));
     });
-  }  
+  }
+
+  // Verificación de productos cargados (puedes adaptar esto a tu lógica real)
+  function verificarProductos(productos) {
+    if (!productos || productos.length === 0) {
+      alert("Estamos restaurando el catálogo. Si no ves los productos en unos segundos, recarga la página.");
+    }
+  }
+
+  // Ejemplo de uso (si usas fetch directo, adapta según tu estructura)
+  fetch('/api/productos')
+    .then(res => res.json())
+    .then(data => {
+      verificarProductos(data);
+      // Aquí iría tu lógica para mostrar los productos
+    })
+    .catch(err => {
+      console.error('Error al cargar productos:', err);
+      verificarProductos([]);
+    });
 
 
         
