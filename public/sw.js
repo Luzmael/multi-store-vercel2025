@@ -15,39 +15,54 @@ self.addEventListener('fetch', event => {
 
   event.respondWith(
     caches.open(CACHE_NAME).then(async cache => {
-      const cachedResponse = await cache.match(event.request);
       const now = Date.now();
+      const cachedResponse = await cache.match(event.request);
+      const cachedTime = await getCachedTime(cache, url);
+      const isValidCache = cachedResponse && cachedTime && (now - cachedTime < EXPIRATION_MS);
 
-      // Verifica si la caché está vigente
-      if (cachedResponse) {
-        const cachedTime = await getCachedTime(cache, url);
-        if (cachedTime && now - cachedTime < EXPIRATION_MS) {
-          return cachedResponse;
-        } else {
-          await cache.delete(event.request); // Elimina caché vencida
-        }
-      }
-
-      // Intenta obtener desde la red
       try {
         const networkResponse = await fetch(event.request);
         if (networkResponse.ok) {
           cache.put(event.request, networkResponse.clone());
           await setCachedTime(cache, url, now);
           return networkResponse;
+        } else if (isValidCache) {
+          return cachedResponse;
         } else {
-          // Si la respuesta no es válida, usa caché si existe
-          const fallback = await cache.match(event.request);
-          return fallback || new Response(JSON.stringify([]), {
+          // Reescribe caché con estructura segura si la respuesta no es válida
+          const fallbackData = [
+            {
+              id: 'fallback',
+              nombre: 'Catálogo no disponible',
+              sizes: []
+            }
+          ];
+          const fallbackResponse = new Response(JSON.stringify(fallbackData), {
             headers: { 'Content-Type': 'application/json' }
           });
+          cache.put(event.request, fallbackResponse.clone());
+          await setCachedTime(cache, url, now);
+          return fallbackResponse;
         }
       } catch (error) {
-        // Si falla el fetch (sin conexión), usa caché si existe
-        const fallback = await cache.match(event.request);
-        return fallback || new Response(JSON.stringify([]), {
-          headers: { 'Content-Type': 'application/json' }
-        });
+        if (isValidCache) {
+          return cachedResponse;
+        } else {
+          // Reescribe caché con estructura segura si no hay conexión
+          const fallbackData = [
+            {
+              id: 'offline',
+              nombre: 'Sin conexión',
+              sizes: []
+            }
+          ];
+          const fallbackResponse = new Response(JSON.stringify(fallbackData), {
+            headers: { 'Content-Type': 'application/json' }
+          });
+          cache.put(event.request, fallbackResponse.clone());
+          await setCachedTime(cache, url, now);
+          return fallbackResponse;
+        }
       }
     })
   );
