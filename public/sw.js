@@ -22,23 +22,22 @@ async function manejarProductos(request) {
     ? (now - parseInt(await timestampResponse.text())) > EXPIRATION_HOURS * 60 * 60 * 1000
     : true;
 
-  // 🧠 Verificar si el caché tiene productos válidos
   let cacheTieneProductos = false;
   if (cachedResponse) {
     try {
-      const cachedData = await cachedResponse.clone().json();
-      cacheTieneProductos = Array.isArray(cachedData) && cachedData.length > 0;
+      const data = await cachedResponse.clone().json();
+      cacheTieneProductos = Array.isArray(data) && data.length > 0;
     } catch (e) {
       cacheTieneProductos = false;
     }
   }
 
-  // 🔁 Si el caché es válido y tiene productos → úsalo
+  // ✅ Si el caché existe, no está vencido y tiene productos → úsalo
   if (cachedResponse && !vencido && cacheTieneProductos) {
     return cachedResponse;
   }
 
-  // 🛰️ Si no hay caché válido o está vacío → pedir a Supabase
+  // 🔁 Si no hay caché válido → pedir a Supabase
   try {
     const response = await fetch(request);
     const data = await response.clone().json();
@@ -48,11 +47,9 @@ async function manejarProductos(request) {
       await cache.put('timestamp', new Response(now.toString()));
       return response;
     } else {
-      // Supabase respondió vacío → usar caché si existe
       return cachedResponse || fallbackResponse('Catálogo vacío');
     }
   } catch (err) {
-    // Supabase no respondió → usar caché aunque esté vencido
     return cachedResponse || fallbackResponse('Error: sin conexión y sin datos');
   }
 }
