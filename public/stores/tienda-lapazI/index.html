@@ -2329,6 +2329,27 @@ window.addEventListener("beforeinstallprompt", (e) => {
         window.sendWhatsApp = sendWhatsApp;
         window.toggleProductDetails = toggleProductDetails;
         window.filterProducts = filterProducts;
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      console.log('✅ Service Worker registrado:', reg.scope);
+
+      // Verificar si hay actualizaciones cada vez que se carga
+      reg.update();
+
+      // Opcional: mostrar si los datos vienen del caché
+      navigator.serviceWorker.addEventListener('message', event => {
+        if (event.data === 'cache-used') {
+          console.log('📦 Datos servidos desde caché');
+        }
+        if (event.data === 'supabase-used') {
+          console.log('🛰️ Datos obtenidos desde Supabase');
+        }
+      });
+    }).catch(err => {
+      console.error('❌ Error al registrar el Service Worker:', err);
+    });
+  }
         
     </script>
 </body>
