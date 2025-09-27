@@ -2331,19 +2331,27 @@ window.addEventListener("beforeinstallprompt", (e) => {
         window.filterProducts = filterProducts;
 
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => {
-          console.log('Service Worker registrado:', reg.scope);
+  navigator.serviceWorker.register('/sw.js')
+    .then(reg => {
+      console.log('Service Worker registrado:', reg.scope);
 
-          // Verifica si el catálogo está vacío y fuerza actualización si es necesario
-          if (reg.active) {
-            reg.active.postMessage('verificar-catalogo');
-          }
-        })
-        .catch(err => console.error('Error al registrar el Service Worker:', err));
-    });
-  }
+      navigator.serviceWorker.ready.then(reg => {
+        if (reg.active) {
+          reg.active.postMessage('verificar-catalogo');
+          console.log('Mensaje enviado al SW: verificar-catalogo');
+        } else {
+          console.warn('Service Worker aún no activo, reintentando...');
+          setTimeout(() => {
+            if (reg.active) {
+              reg.active.postMessage('verificar-catalogo');
+              console.log('Mensaje reenviado al SW');
+            }
+          }, 1000);
+        }
+      });
+    })
+    .catch(err => console.error('Error al registrar el Service Worker:', err));
+}
        
 
         
