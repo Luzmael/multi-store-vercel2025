@@ -2330,26 +2330,29 @@ window.addEventListener("beforeinstallprompt", (e) => {
         window.toggleProductDetails = toggleProductDetails;
         window.filterProducts = filterProducts;
 
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').then(reg => {
-      console.log('✅ Service Worker registrado:', reg.scope);
+<script>
+  async function leerServiceWorker() {
+    try {
+      const response = await fetch('/sw.js');
+      if (!response.ok) throw new Error('No se pudo cargar el Service Worker');
+      const texto = await response.text();
+      console.log('📄 Contenido del Service Worker:\n', texto);
 
-      // Verificar si hay actualizaciones cada vez que se carga
-      reg.update();
-
-      // Opcional: mostrar si los datos vienen del caché
-      navigator.serviceWorker.addEventListener('message', event => {
-        if (event.data === 'cache-used') {
-          console.log('📦 Datos servidos desde caché');
-        }
-        if (event.data === 'supabase-used') {
-          console.log('🛰️ Datos obtenidos desde Supabase');
-        }
-      });
-    }).catch(err => {
-      console.error('❌ Error al registrar el Service Worker:', err);
-    });
+      // Opcional: mostrarlo en pantalla
+      const pre = document.createElement('pre');
+      pre.style.background = '#111';
+      pre.style.color = '#0f0';
+      pre.style.padding = '20px';
+      pre.style.overflowX = 'auto';
+      pre.textContent = texto;
+      document.body.appendChild(pre);
+    } catch (error) {
+      console.error('❌ Error al leer el Service Worker:', error.message);
+    }
   }
+
+  // Ejecutar al cargar
+  leerServiceWorker();
         
     </script>
 </body>
