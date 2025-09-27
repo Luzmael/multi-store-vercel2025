@@ -1424,7 +1424,7 @@ function initializeSupabase() {
         }
         
         let attempts = 0;
-        const maxAttempts = 5; // 500ms máximo (5 * 100ms)
+        const maxAttempts = 20; // 2s máximo (20 * 100ms)
         
         const checkSupabase = setInterval(() => {
             attempts++;
