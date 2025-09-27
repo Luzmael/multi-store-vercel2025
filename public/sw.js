@@ -2,17 +2,19 @@ const CACHE_NAME = 'mi-cache-v1';
 const EXPIRATION_HOURS = 10;
 const EXPIRATION_MS = EXPIRATION_HOURS * 60 * 60 * 1000;
 
+// Instala el SW inmediatamente
 self.addEventListener('install', event => {
-  self.skipWaiting(); // Activa el SW inmediatamente
+  self.skipWaiting();
 });
 
+// Toma control de las páginas abiertas
 self.addEventListener('activate', event => {
-  clients.claim(); // Toma control de las páginas abiertas
+  clients.claim();
 });
 
+// Intercepta todas las peticiones
 self.addEventListener('fetch', event => {
   const url = event.request.url;
-
   event.respondWith(
     caches.open(CACHE_NAME).then(async cache => {
       const now = Date.now();
@@ -29,39 +31,13 @@ self.addEventListener('fetch', event => {
         } else if (isValidCache) {
           return cachedResponse;
         } else {
-          // Reescribe caché con estructura segura si la respuesta no es válida
-          const fallbackData = [
-            {
-              id: 'fallback',
-              nombre: 'Catálogo no disponible',
-              sizes: []
-            }
-          ];
-          const fallbackResponse = new Response(JSON.stringify(fallbackData), {
-            headers: { 'Content-Type': 'application/json' }
-          });
-          cache.put(event.request, fallbackResponse.clone());
-          await setCachedTime(cache, url, now);
-          return fallbackResponse;
+          return fallbackCatalog(cache, event.request, url, now, 'Catálogo no disponible');
         }
       } catch (error) {
         if (isValidCache) {
           return cachedResponse;
         } else {
-          // Reescribe caché con estructura segura si no hay conexión
-          const fallbackData = [
-            {
-              id: 'offline',
-              nombre: 'Sin conexión',
-              sizes: []
-            }
-          ];
-          const fallbackResponse = new Response(JSON.stringify(fallbackData), {
-            headers: { 'Content-Type': 'application/json' }
-          });
-          cache.put(event.request, fallbackResponse.clone());
-          await setCachedTime(cache, url, now);
-          return fallbackResponse;
+          return fallbackCatalog(cache, event.request, url, now, 'Sin conexión');
         }
       }
     })
@@ -84,14 +60,36 @@ async function getCachedTime(cache, url) {
   return parseInt(text, 10);
 }
 
-// Detecta si la caché está vacía y fuerza actualización
+// Crea una respuesta de fallback segura
+function fallbackCatalog(cache, request, url, now, mensaje) {
+  const fallbackData = [
+    { id: 'fallback', nombre: mensaje, sizes: [] }
+  ];
+  const fallbackResponse = new Response(JSON.stringify(fallbackData), {
+    headers: { 'Content-Type': 'application/json' }
+  });
+  cache.put(request, fallbackResponse.clone());
+  setCachedTime(cache, url, now);
+  return fallbackResponse;
+}
+
+// Verifica si el catálogo está vacío y fuerza limpieza
 self.addEventListener('message', event => {
   if (event.data === 'verificar-catalogo') {
     caches.open(CACHE_NAME).then(cache => {
-      cache.keys().then(keys => {
-        if (keys.length === 0) {
-          self.skipWaiting(); // Fuerza actualización del SW
-        }
+      cache.match('/api/products').then(response => {
+        if (!response) return;
+        response.json().then(data => {
+          if (!Array.isArray(data) || data.length === 0) {
+            console.warn('Catálogo vacío, eliminando caché...');
+            cache.delete('/api/products');
+            cache.delete('/api/products_timestamp');
+          }
+        }).catch(err => {
+          console.error('Error al leer productos del caché:', err);
+          cache.delete('/api/products');
+          cache.delete('/api/products_timestamp');
+        });
       });
     });
   }
